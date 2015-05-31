@@ -306,7 +306,7 @@ static ssize_t run_command(struct file *file, const char __user *buf,
 					}
 				}
 			}
-			printk("\n");
+//			printk("\n");
 
 			int type=((data[1] == 0) && (data[3] == 0))?DHT11:DHT22;
 
