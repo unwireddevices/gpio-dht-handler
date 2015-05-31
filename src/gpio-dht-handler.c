@@ -98,9 +98,13 @@ static irqreturn_t gpio_edge_interrupt(int irq, void* dev_id)
 	if(handler && (handler->irq == irq) && (handler->counter < 43))
 	{
 //		debug("Got _handler!\n");
-		udelay(35);
-		handler->value[handler->counter] = (__raw_readl(gpio_addr + GPIO_OFFS_READ) >> handler->gpio) & 1;
-		handler->counter++;
+
+		if (((__raw_readl(gpio_addr + GPIO_OFFS_READ) >> handler->gpio) & 1) == 1)
+		{
+			udelay(35);
+			handler->value[handler->counter] = (__raw_readl(gpio_addr + GPIO_OFFS_READ) >> handler->gpio) & 1;
+			handler->counter++;
+		}
 	}
 	else
 	{
@@ -120,7 +124,7 @@ static int add_irq(int gpio,void* data)
 
 		if(irq_number >= 0)
 		{
-		    int err = request_irq(irq_number, gpio_edge_interrupt, IRQ_TYPE_EDGE_RISING, "gpio_irq_handler", data);
+		    int err = request_irq(irq_number, gpio_edge_interrupt, IRQ_TYPE_EDGE_BOTH, "gpio_irq_handler", data);
 
 		    if(!err)
 		    {
@@ -302,7 +306,7 @@ static ssize_t run_command(struct file *file, const char __user *buf,
 					}
 				}
 			}
-//			printk("\n");
+			printk("\n");
 
 			int type=((data[1] == 0) && (data[3] == 0))?DHT11:DHT22;
 
